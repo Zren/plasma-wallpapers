@@ -34,9 +34,9 @@ ColumnLayout {
     property int cfg_FillMode
     property var cfg_SlidePaths: ""
     property int cfg_SlideInterval: 0
-    property alias cfg_AnimationDuration: animationDurationSpinBox.value
-    property alias cfg_TickInterval: tickIntervalSpinBox.value
-    property alias cfg_TickDelta: tickDeltaSpinBox.value
+    property int cfg_AnimationDuration: 400
+    property int cfg_TickInterval: 10000
+    property double cfg_TickDelta: 0.05
 
     function saveConfig() {
         imageWallpaper.commitDeletion();
@@ -252,6 +252,8 @@ ColumnLayout {
                 }
                 QtControls.SpinBox {
                     id: tickDeltaSpinBox
+                    value: cfg_TickDelta
+                    onValueChanged: cfg_TickDelta = value
                     decimals: 2
                     stepSize: 0.05
                     minimumValue: 0.00 // No change
@@ -262,6 +264,8 @@ ColumnLayout {
                 }
                 QtControls.SpinBox {
                     id: animationDurationSpinBox
+                    value: cfg_AnimationDuration
+                    onValueChanged: cfg_AnimationDuration = value
                     maximumValue: 2000000000
                     stepSize: 100
                     suffix: i18n("ms")
@@ -274,17 +278,19 @@ ColumnLayout {
                 QtControls.SpinBox {
                     decimals: cfg_TickInterval % 1000 == 0 ? 0 : 3
                     value: cfg_TickInterval / 1000
+                    onValueChanged: cfg_TickInterval = value * 1000
                     minimumValue: 1
                     maximumValue: 2000000000
                     stepSize: 1
                     suffix: i18n("sec")
-                    onValueChanged: cfg_TickInterval = value * 1000
                 }
                 QtControls.Label {
                     text: "("
                 }
                 QtControls.SpinBox {
                     id: tickIntervalSpinBox
+                    value: cfg_TickInterval
+                    onValueChanged: cfg_TickInterval = value
                     minimumValue: 1000
                     maximumValue: 2000000000
                     stepSize: 1000
