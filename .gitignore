@@ -1,0 +1,5 @@
+*.qmlc
+*.jsc
+
+*.sublime-project
+*.sublime-workspace
