@@ -1,0 +1,15 @@
+#!/bin/bash
+# Version 5
+
+packageExt="zip"
+packageName=$(kreadconfig5 --file="$PWD/package/metadata.desktop" --group="Desktop Entry" --key="X-KDE-PluginInfo-Name")
+packageName="${packageName##*.}" # Strip namespace (Eg: "org.kde.plasma.")
+packageVersion=$(kreadconfig5 --file="$PWD/package/metadata.desktop" --group="Desktop Entry" --key="X-KDE-PluginInfo-Version")
+rm ${packageName}-v*.${packageExt}
+cd package
+filename=${packageName}-v${packageVersion}.${packageExt}
+zip -r $filename *
+mv $filename ../$filename
+cd ..
+echo "md5: $(md5sum $filename | awk '{ print $1 }')"
+echo "sha256: $(sha256sum $filename | awk '{ print $1 }')"
