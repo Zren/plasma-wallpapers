@@ -36,11 +36,11 @@ Item {
         }
     }
 
-    Text {
-        id: debugText
-        anchors.fill: parent
-        color: "#eee"
-        text: "Blur Radius: " + blurredImage.blurRadius
-        font.pixelSize: 24 * units.devicePixelRatio
-    }
+    // Text {
+    //     id: debugText
+    //     anchors.fill: parent
+    //     color: "#eee"
+    //     text: "Blur Radius: " + blurredImage.blurRadius
+    //     font.pixelSize: 24 * units.devicePixelRatio
+    // }
 }
