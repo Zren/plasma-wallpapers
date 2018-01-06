@@ -35,7 +35,7 @@ Item {
     Rectangle {
         id: backgroundColor
         anchors.fill: parent
-        visible: shiftedImage.status === Image.Ready
+        visible: blurredWallpaper.status === Image.Ready
         color: wallpaper.configuration.Color
         Behavior on color {
             ColorAnimation { duration: units.longDuration }
@@ -48,6 +48,7 @@ Item {
     }
 
     BlurredWallpaper {
+        id: blurredWallpaper
         anchors.fill: parent
         source: wallpaper.configuration.Image
         fillMode: wallpaper.configuration.FillMode
