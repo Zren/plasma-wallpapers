@@ -9,6 +9,8 @@ import org.kde.taskmanager 0.1 as TaskManager
 Item {
 	property alias screenGeometry: tasksModel.screenGeometry
 	property bool noWindowActive: true
+	property bool currentWindowMaximized: false
+	property bool isActiveWindowPinned: false
 
 	TaskManager.VirtualDesktopInfo { id: virtualDesktopInfo }
 	TaskManager.ActivityInfo { id: activityInfo }
@@ -51,12 +53,5 @@ Item {
 		noWindowActive = activeWindowModel.count === 0 || actTask.IsActive !== true
 		currentWindowMaximized = !noWindowActive && actTask.IsMaximized === true
 		isActiveWindowPinned = actTask.VirtualDesktop === -1;
-		if (noWindowActive) {
-			windowTitleText.text = plasmoid.configuration.noWindowText
-			iconItem.source = plasmoid.configuration.noWindowIcon
-		} else {
-			windowTitleText.text = textType === 1 ? actTask.AppName : replaceTitle(actTask.display)
-			iconItem.source = actTask.decoration
-		}
 	}
 }
