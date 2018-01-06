@@ -44,7 +44,7 @@ Item {
 
     WindowModel {
         id: windowModel
-        onNoWindowActiveChanged: console.log('noActiveWindow', noActiveWindow)
+        // onNoWindowActiveChanged: console.log('noWindowActive', noWindowActive)
     }
 
     BlurredWallpaper {
