@@ -21,7 +21,7 @@ Item {
 
 		activity: activityInfo.currentActivity
 		virtualDesktop: virtualDesktopInfo.currentDesktop
-		screenGeometry: wallpaper.screenGeometry
+		screenGeometry: wallpaper.screenGeometry // Warns "Unable to assign [undefined] to QRect" during init, but works thereafter.
 
 		filterByActivity: true
 		filterByVirtualDesktop: true
