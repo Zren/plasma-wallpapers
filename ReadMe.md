@@ -4,6 +4,10 @@
 
 Preview: https://streamable.com/u5fdg
 
+## Inactive Blur
+
+Preview: https://streamable.com/8c2jg
+
 
 # Install All Wallpaper Plugins
 
