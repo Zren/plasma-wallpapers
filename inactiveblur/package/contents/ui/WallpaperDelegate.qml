@@ -173,11 +173,4 @@ MouseArea {
     }
 
     onExited: Tooltip.hideText()
-
-    Component.onCompleted: {
-        if (cfg_Image == model.path) {
-            makeCurrentTimer.pendingIndex = model.index
-            makeCurrentTimer.restart()
-        }
-    }
 }
