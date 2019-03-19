@@ -28,18 +28,19 @@ Item {
 		filterByScreen: true
 
 		onActiveTaskChanged: {
-			activeWindowModel.sourceModel = tasksModel
 			updateActiveWindowInfo()
 		}
 		onDataChanged: {
 			updateActiveWindowInfo()
+		}
+		Component.onCompleted: {
+			activeWindowModel.sourceModel = tasksModel
 		}
 	}
 	PlasmaCore.SortFilterModel {
 		id: activeWindowModel
 		filterRole: 'IsActive'
 		filterRegExp: 'true'
-		sourceModel: tasksModel
 		onDataChanged: updateActiveWindowInfo()
 		onCountChanged: updateActiveWindowInfo()
 	}
