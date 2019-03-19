@@ -41,6 +41,7 @@ Item {
 		filterRegExp: 'true'
 		sourceModel: tasksModel
 		onDataChanged: updateActiveWindowInfo()
+		onCountChanged: updateActiveWindowInfo()
 	}
 
 
