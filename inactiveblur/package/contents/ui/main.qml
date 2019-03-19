@@ -24,36 +24,24 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 
 import QtGraphicalEffects 1.0
 
-Item {
-    id: root
-
-    //public API, the C++ part will look for those
-    function setUrl(url) {
-        wallpaper.configuration.Image = url
-    }
-
-    Rectangle {
-        id: backgroundColor
-        anchors.fill: parent
-        visible: blurredWallpaper.status === Image.Ready
-        color: wallpaper.configuration.Color
-        Behavior on color {
-            ColorAnimation { duration: units.longDuration }
-        }
-    }
-
+ImageBaseMain {
     WindowModel {
         id: windowModel
         // onNoWindowActiveChanged: console.log('noWindowActive', noWindowActive)
     }
 
-    BlurredWallpaper {
-        id: blurredWallpaper
-        anchors.fill: parent
-        source: wallpaper.configuration.Image
-        fillMode: wallpaper.configuration.FillMode
-        blurRadius: windowModel.noWindowActive ? 0 : wallpaper.configuration.BlurRadius
-        animationDuration: wallpaper.configuration.AnimationDuration
-    }
+    baseImage: Component {
+        BlurredWallpaper {
+            id: blurredWallpaper
+            anchors.fill: parent
+            source: wallpaper.configuration.Image
+            fillMode: wallpaper.configuration.FillMode
+            blurRadius: windowModel.noWindowActive ? 0 : wallpaper.configuration.BlurRadius
+            animationDuration: wallpaper.configuration.AnimationDuration
 
+
+            property bool blur: false // Blur negative space (Ignored)
+            property bool color: false // Color for negative space (Ignored)
+        }
+    }
 }
