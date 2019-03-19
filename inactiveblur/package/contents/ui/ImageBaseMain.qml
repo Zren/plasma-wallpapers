@@ -92,7 +92,7 @@ QQC2.StackView {
 
     function loadImage() {
         var isFirst = (root.currentItem == undefined)
-        var pendingImage = baseImage.createObject(root, {
+        var pendingImage = root.baseImage.createObject(root, {
             "source": root.modelImage,
             "fillMode": root.fillMode,
             "sourceSize": root.sourceSize,
@@ -113,8 +113,6 @@ QQC2.StackView {
     }
 
     property Component baseImage: Component {
-        id: baseImage
-
         Image {
             id: mainImage
 
