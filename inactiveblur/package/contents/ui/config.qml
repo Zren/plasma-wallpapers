@@ -19,21 +19,28 @@
 
 import QtQuick 2.5
 import QtQuick.Controls 1.0 as QtControls
-import QtQuick.Dialogs 1.1 as QtDialogs
+import QtQuick.Controls 2.3 as QtControls2
 import QtQuick.Layouts 1.0
 import QtQuick.Window 2.0 // for Screen
 //We need units from it
 import org.kde.plasma.core 2.0 as Plasmacore
 import org.kde.plasma.wallpapers.image 2.0 as Wallpaper
+import org.kde.kquickcontrols 2.0 as KQuickControls
 import org.kde.kquickcontrolsaddons 2.0
+import org.kde.kconfig 1.0 // for KAuthorized
+import org.kde.draganddrop 2.0 as DragDrop
+import org.kde.kcm 1.1 as KCM
+import org.kde.kirigami 2.5 as Kirigami
 
 ColumnLayout {
     id: root
-    property alias cfg_Color: colorDialog.color
+    property alias cfg_Color: colorButton.color
     property string cfg_Image
     property int cfg_FillMode
+    property alias cfg_Blur: blurRadioButton.checked
     property var cfg_SlidePaths: ""
     property int cfg_SlideInterval: 0
+
     property int cfg_AnimationDuration: 400
     property int cfg_BlurRadius: 40
 
@@ -75,41 +82,46 @@ ColumnLayout {
     Row {
         //x: formAlignment - positionLabel.paintedWidth
         spacing: units.largeSpacing / 2
-        QtControls.Label {
+        QtControls2.Label {
             id: positionLabel
             width: formAlignment - units.largeSpacing
             anchors {
                 verticalCenter: resizeComboBox.verticalCenter
             }
-            text: i18nd("plasma_applet_org.kde.image", "Positioning:")
+            text: i18nd("plasma_wallpaper_org.kde.image", "Positioning:")
             horizontalAlignment: Text.AlignRight
         }
+
+        // TODO: port to QQC2 version once we've fixed https://bugs.kde.org/show_bug.cgi?id=403153
         QtControls.ComboBox {
             id: resizeComboBox
-            property int textLength: 24
-            width: theme.mSize(theme.defaultFont).width * textLength
+            TextMetrics {
+                id: resizeTextMetrics
+                text: resizeComboBox.currentText
+            }
+            width: resizeTextMetrics.width + Kirigami.Units.smallSpacing * 2 + Kirigami.Units.gridUnit * 2
             model: [
-                        {
-                            'label': i18nd("plasma_applet_org.kde.image", "Scaled and Cropped"),
-                            'fillMode': Image.PreserveAspectCrop
-                        },
-                        {
-                            'label': i18nd("plasma_applet_org.kde.image","Scaled"),
-                            'fillMode': Image.Stretch
-                        },
-                        {
-                            'label': i18nd("plasma_applet_org.kde.image","Scaled, Keep Proportions"),
-                            'fillMode': Image.PreserveAspectFit
-                        },
-                        {
-                            'label': i18nd("plasma_applet_org.kde.image", "Centered"),
-                            'fillMode': Image.Pad
-                        },
-                        {
-                            'label': i18nd("plasma_applet_org.kde.image","Tiled"),
-                            'fillMode': Image.Tile
-                        }
-                    ]
+                {
+                    'label': i18nd("plasma_wallpaper_org.kde.image", "Scaled and Cropped"),
+                    'fillMode': Image.PreserveAspectCrop
+                },
+                {
+                    'label': i18nd("plasma_wallpaper_org.kde.image", "Scaled"),
+                    'fillMode': Image.Stretch
+                },
+                {
+                    'label': i18nd("plasma_wallpaper_org.kde.image", "Scaled, Keep Proportions"),
+                    'fillMode': Image.PreserveAspectFit
+                },
+                {
+                    'label': i18nd("plasma_wallpaper_org.kde.image", "Centered"),
+                    'fillMode': Image.Pad
+                },
+                {
+                    'label': i18nd("plasma_wallpaper_org.kde.image", "Tiled"),
+                    'fillMode': Image.Tile
+                }
+            ]
 
             textRole: "label"
             onCurrentIndexChanged: cfg_FillMode = model[currentIndex]["fillMode"]
@@ -127,189 +139,124 @@ ColumnLayout {
         }
     }
 
-    QtDialogs.ColorDialog {
-        id: colorDialog
-        modality: Qt.WindowModal
-        showAlphaChannel: false
-        title: i18nd("plasma_applet_org.kde.image", "Select Background Color")
+    QtControls2.ButtonGroup { id: backgroundGroup }
+
+    Row {
+        id: blurRow
+        spacing: units.largeSpacing / 2
+        visible: cfg_FillMode === Image.PreserveAspectFit || cfg_FillMode === Image.Pad
+        QtControls2.Label {
+            id: blurLabel
+            width: formAlignment - units.largeSpacing
+            anchors.verticalCenter: blurRadioButton.verticalCenter
+            horizontalAlignment: Text.AlignRight
+            text: i18nd("plasma_wallpaper_org.kde.image", "Background:")
+        }
+        QtControls2.RadioButton {
+            id: blurRadioButton
+            text: i18nd("plasma_wallpaper_org.kde.image", "Blur")
+            QtControls2.ButtonGroup.group: backgroundGroup
+        }
     }
 
     Row {
         id: colorRow
+        visible: cfg_FillMode === Image.PreserveAspectFit || cfg_FillMode === Image.Pad
         spacing: units.largeSpacing / 2
-        QtControls.Label {
+        QtControls2.Label {
             width: formAlignment - units.largeSpacing
-            anchors.verticalCenter: colorButton.verticalCenter
-            horizontalAlignment: Text.AlignRight
-            text: i18nd("plasma_applet_org.kde.image", "Background Color:")
         }
-        QtControls.Button {
+        QtControls2.RadioButton {
+            id: colorRadioButton
+            text: i18nd("plasma_wallpaper_org.kde.image", "Solid color")
+            QtControls2.ButtonGroup.group: backgroundGroup
+            checked: !cfg_Blur
+        }
+        KQuickControls.ColorButton {
             id: colorButton
-            width: units.gridUnit * 3
-            text: " " // needed to it gets a proper height...
-            onClicked: colorDialog.open()
+            dialogTitle: i18nd("plasma_wallpaper_org.kde.image", "Select Background Color")
+        }
+    }
 
-            Rectangle {
-                id: colorRect
-                anchors.centerIn: parent
-                width: parent.width - 2 * units.smallSpacing
-                height: theme.mSize(theme.defaultFont).height
-                color: colorDialog.color
+    Row {
+        id: inactiveBlurRow
+        spacing: units.largeSpacing / 2
+        QtControls2.Label {
+            width: formAlignment - units.largeSpacing
+            anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
+            horizontalAlignment: Text.AlignRight
+            text: i18n("Blur:")
+        }
+        QtControls2.Label {
+            anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
+            text: i18n(" by ")
+        }
+        QtControls2.SpinBox {
+            id: blurRadiusSpinBox
+            value: cfg_BlurRadius
+            onValueChanged: cfg_BlurRadius = value
+            stepSize: 1
+            from: 1
+            to: 2000000000
+            editable: true
+        }
+        QtControls2.Label {
+            anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
+            text: i18n(" over ")
+        }
+        QtControls2.SpinBox {
+            id: animationDurationSpinBox
+            value: cfg_AnimationDuration
+            onValueChanged: cfg_AnimationDuration = value
+            from: 0
+            to: 2000000000
+            stepSize: 100
+            editable: true
+            textFromValue: function(value, locale) {
+                // var x = Number(value).toLocaleString(locale, 'f', 0);
+                return i18n("%1ms", value)
             }
         }
+
     }
 
 
     Component {
         id: thumbnailsComponent
-        QtControls.ScrollView {
+        KCM.GridView {
+            id: wallpapersGrid
             anchors.fill: parent
 
-            frameVisible: true
-            highlightOnFocus: true;
-
-            Component.onCompleted: {
-                //replace the current binding on the scrollbar that makes it visible when content doesn't fit
-
-                //otherwise we adjust gridSize when we hide the vertical scrollbar and
-                //due to layouting that can make everything adjust which changes the contentWidth/height which
-                //changes our scrollbars and we continue being stuck in a loop
-
-                //looks better to not have everything resize anyway.
-                //BUG: 336301
-                __verticalScrollBar.visible = true
-            }
-
-            GridView {
-                id: wallpapersGrid
-                model: imageWallpaper.wallpaperModel
-                currentIndex: -1
-                focus: true
-
-                cellWidth: Math.floor(wallpapersGrid.width / Math.max(Math.floor(wallpapersGrid.width / (units.gridUnit*12)), 1))
-                cellHeight: Math.round(cellWidth / (imageWallpaper.targetSize.width / imageWallpaper.targetSize.height))
-
-                anchors.margins: 4
-                boundsBehavior: Flickable.StopAtBounds
-
-                delegate: WallpaperDelegate {
-                    color: cfg_Color
-                }
-
-                onContentHeightChanged: {
-                    wallpapersGrid.currentIndex = imageWallpaper.wallpaperModel.indexOf(cfg_Image);
-                    wallpapersGrid.positionViewAtIndex(wallpapersGrid.currentIndex, GridView.Visible)
-                }
-
-                Keys.onPressed: {
-                    if (count < 1) {
-                        return;
-                    }
-
-                    if (event.key == Qt.Key_Home) {
-                        currentIndex = 0;
-                    } else if (event.key == Qt.Key_End) {
-                        currentIndex = count - 1;
-                    }
-                }
-
-                Keys.onLeftPressed: moveCurrentIndexLeft()
-                Keys.onRightPressed: moveCurrentIndexRight()
-                Keys.onUpPressed: moveCurrentIndexUp()
-                Keys.onDownPressed: moveCurrentIndexDown()
-
-                Connections {
-                    target: imageWallpaper
-                    onCustomWallpaperPicked: {
-                        wallpapersGrid.currentIndex = 0
-                    }
-                }
-
+            //that min is needed as the module will be populated in an async way
+            //and only on demand so we can't ensure it already exists
+            view.currentIndex: Math.min(imageWallpaper.wallpaperModel.indexOf(cfg_Image), imageWallpaper.wallpaperModel.count-1)
+            //kill the space for label under thumbnails
+            view.model: imageWallpaper.wallpaperModel
+            view.delegate: WallpaperDelegate {
+                color: cfg_Color
             }
         }
     }
 
-    RowLayout {
+    Loader {
         Layout.fillWidth: true
         Layout.fillHeight: true
-
-        Loader {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            sourceComponent: thumbnailsComponent
-        }
-
-        ColumnLayout {
-            Layout.minimumWidth: parent.width / 3
-            Layout.preferredWidth: parent.width / 3
-            Layout.maximumWidth: parent.width * 2/3
-            Layout.fillHeight: true
-
-            RowLayout {
-                QtControls.Label {
-                    text: i18n("Blur by ")
-                }
-                QtControls.SpinBox {
-                    id: blurRadiusSpinBox
-                    value: cfg_BlurRadius
-                    onValueChanged: cfg_BlurRadius = value
-                    decimals: 0
-                    stepSize: 1
-                    minimumValue: 1
-                    maximumValue: 2000000000
-                }
-                QtControls.Label {
-                    text: i18n(" over ")
-                }
-                QtControls.SpinBox {
-                    id: animationDurationSpinBox
-                    value: cfg_AnimationDuration
-                    onValueChanged: cfg_AnimationDuration = value
-                    maximumValue: 2000000000
-                    stepSize: 100
-                    suffix: i18n("ms")
-                }
-            }
-
-            BlurredWallpaper {
-                id: previewImage
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                source: cfg_Image
-                fillMode: Image.PreserveAspectFit
-                blurRadius: cfg_BlurRadius * previewSlider.value
-                animationDuration: cfg_AnimationDuration
-            }
-
-            QtControls.Label {
-                Layout.fillWidth: true
-                text: i18n("Blur Radius: %1", previewImage.blurRadius)
-            }
-
-            QtControls.Slider {
-                id: previewSlider
-                Layout.fillWidth: true
-                // defaults to a real range of [0..1]
-                value: 1
-            }
-        }
+        sourceComponent: thumbnailsComponent
     }
 
     RowLayout {
         id: buttonsRow
-        anchors {
-            right: parent.right
-        }
-        QtControls.Button {
-            iconName: "document-open-folder"
-            text: i18nd("plasma_applet_org.kde.image","Open...")
+        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+        QtControls2.Button {
+            icon.name: "list-add"
+            text: i18nd("plasma_wallpaper_org.kde.image","Add Image...")
             onClicked: imageWallpaper.showFileDialog();
         }
-        QtControls.Button {
-            iconName: "get-hot-new-stuff"
-            text: i18nd("plasma_applet_org.kde.image","Get New Wallpapers...")
-            onClicked: imageWallpaper.getNewWallpaper();
+        QtControls2.Button {
+            icon.name: "get-hot-new-stuff"
+            text: i18nd("plasma_wallpaper_org.kde.image","Get New Wallpapers...")
+            visible: KAuthorized.authorize("ghns")
+            onClicked: imageWallpaper.getNewWallpaper(this);
         }
     }
 }
