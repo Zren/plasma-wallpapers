@@ -28,12 +28,15 @@ Item {
 		filterByScreen: true
 
 		onActiveTaskChanged: {
+			// console.log('tasksModel.onActiveTaskChanged')
 			updateActiveWindowInfo()
 		}
 		onDataChanged: {
+			// console.log('tasksModel.onDataChanged')
 			updateActiveWindowInfo()
 		}
 		Component.onCompleted: {
+			// console.log('tasksModel.Component.onCompleted')
 			activeWindowModel.sourceModel = tasksModel
 		}
 	}
@@ -41,8 +44,14 @@ Item {
 		id: activeWindowModel
 		filterRole: 'IsActive'
 		filterRegExp: 'true'
-		onDataChanged: updateActiveWindowInfo()
-		onCountChanged: updateActiveWindowInfo()
+		onDataChanged: {
+			// console.log('activeWindowModel.onDataChanged')
+			updateActiveWindowInfo()
+		}
+		onCountChanged: {
+			// console.log('activeWindowModel.onCountChanged')
+			updateActiveWindowInfo()
+		}
 	}
 
 
