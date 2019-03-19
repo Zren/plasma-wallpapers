@@ -41,8 +41,7 @@ ColumnLayout {
     property var cfg_SlidePaths: ""
     property int cfg_SlideInterval: 0
 
-    property int cfg_AnimationDuration: 400
-    property int cfg_BlurRadius: 40
+    property alias cfg_Slideshow: slideshowCheckBox.checked
 
     function saveConfig() {
         imageWallpaper.commitDeletion();
@@ -183,6 +182,112 @@ ColumnLayout {
         id: content
     }
 
+    Row {
+        id: slideshowRow
+        spacing: units.largeSpacing / 2
+        QtControls2.Label {
+            width: formAlignment - units.largeSpacing
+            anchors.verticalCenter: slideshowCheckBox.verticalCenter
+            horizontalAlignment: Text.AlignRight
+            text: i18n("Slideshow:")
+        }
+        QtControls2.CheckBox {
+            id: slideshowCheckBox
+        }
+    }
+
+    Component {
+        id: foldersComponent
+        ColumnLayout {
+            anchors.fill: parent
+            Connections {
+                target: root
+                onHoursIntervalValueChanged: hoursInterval.value = root.hoursIntervalValue
+                onMinutesIntervalValueChanged: minutesInterval.value = root.minutesIntervalValue
+                onSecondsIntervalValueChanged: secondsInterval.value = root.secondsIntervalValue
+            }
+            //FIXME: there should be only one spinbox: QtControls spinboxes are still too limited for it tough
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: units.largeSpacing / 2
+                QtControls2.Label {
+                    Layout.minimumWidth: formAlignment - units.largeSpacing
+                    horizontalAlignment: Text.AlignRight
+                    text: i18nd("plasma_wallpaper_org.kde.image","Change every:")
+                }
+                QtControls2.SpinBox {
+                    id: hoursInterval
+                    Layout.minimumWidth: textMetrics.width + units.gridUnit
+                    width: units.gridUnit * 3
+                    value: root.hoursIntervalValue
+                    from: 0
+                    to: 24
+                    editable: true
+                    onValueChanged: cfg_SlideInterval = hoursInterval.value * 3600 + minutesInterval.value * 60 + secondsInterval.value
+                }
+                QtControls2.Label {
+                    text: i18nd("plasma_wallpaper_org.kde.image","Hours")
+                }
+                Item {
+                    Layout.preferredWidth: units.gridUnit
+                }
+                QtControls2.SpinBox {
+                    id: minutesInterval
+                    Layout.minimumWidth: textMetrics.width + units.gridUnit
+                    width: units.gridUnit * 3
+                    value: root.minutesIntervalValue
+                    from: 0
+                    to: 60
+                    editable: true
+                    onValueChanged: cfg_SlideInterval = hoursInterval.value * 3600 + minutesInterval.value * 60 + secondsInterval.value
+                }
+                QtControls2.Label {
+                    text: i18nd("plasma_wallpaper_org.kde.image","Minutes")
+                }
+                Item {
+                    Layout.preferredWidth: units.gridUnit
+                }
+                QtControls2.SpinBox {
+                    id: secondsInterval
+                    Layout.minimumWidth: textMetrics.width + units.gridUnit
+                    width: units.gridUnit * 3
+                    value: root.secondsIntervalValue
+                    from: root.hoursIntervalValue === 0 && root.minutesIntervalValue === 0 ? 1 : 0
+                    to: 60
+                    editable: true
+                    onValueChanged: cfg_SlideInterval = hoursInterval.value * 3600 + minutesInterval.value * 60 + secondsInterval.value
+                }
+                QtControls2.Label {
+                    text: i18nd("plasma_wallpaper_org.kde.image","Seconds")
+                }
+            }
+            QtControls2.ScrollView {
+                id: foldersScroll
+                Layout.fillHeight: true;
+                Layout.fillWidth: true
+                Component.onCompleted: foldersScroll.background.visible = true;
+                ListView {
+                    id: slidePathsView
+                    anchors.margins: 4
+                    model: imageWallpaper.slidePaths
+                    delegate: QtControls2.Label {
+                        text: modelData
+                        width: slidePathsView.width
+                        height: Math.max(paintedHeight, removeButton.height);
+                        QtControls2.ToolButton {
+                            id: removeButton
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                                right: parent.right
+                            }
+                            icon.name: "list-remove"
+                            onClicked: imageWallpaper.removeSlidePath(modelData);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Component {
         id: thumbnailsComponent
@@ -204,13 +309,20 @@ ColumnLayout {
     Loader {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        sourceComponent: thumbnailsComponent
+        sourceComponent: cfg_Slideshow ? foldersComponent : thumbnailsComponent
     }
 
     RowLayout {
         id: buttonsRow
         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
         QtControls2.Button {
+            visible: cfg_Slideshow
+            icon.name: "list-add"
+            text: i18nd("plasma_wallpaper_org.kde.image","Add Folder...")
+            onClicked: imageWallpaper.showAddSlidePathsDialog()
+        }
+        QtControls2.Button {
+            visible: !cfg_Slideshow
             icon.name: "list-add"
             text: i18nd("plasma_wallpaper_org.kde.image","Add Image...")
             onClicked: imageWallpaper.showFileDialog();
