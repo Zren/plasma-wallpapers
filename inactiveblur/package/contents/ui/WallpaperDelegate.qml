@@ -116,6 +116,18 @@ KCM.GridDelegate {
                 return QPixmapItem.PreserveAspectFit;
             }
         }
+
+        FastBlur {
+            id: wallieBlurPreview
+            anchors.fill: parent
+            source: walliePreview
+            visible: radius > 0
+            radius: wallpaperDelegate.hovered ? cfg_BlurRadius : 0
+
+            Behavior on radius {
+                NumberAnimation { duration: cfg_AnimationDuration }
+            }
+        }
     }
 
     onClicked: {
