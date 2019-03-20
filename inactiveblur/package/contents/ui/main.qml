@@ -33,7 +33,6 @@ ImageBaseMain {
     baseImage: Component {
         BlurredWallpaper {
             id: blurredWallpaper
-            anchors.fill: parent
             source: wallpaper.configuration.Image
             fillMode: wallpaper.configuration.FillMode
             blurRadius: windowModel.noWindowActive ? 0 : wallpaper.configuration.BlurRadius
