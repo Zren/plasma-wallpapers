@@ -63,6 +63,6 @@ Item {
 		var actTask = activeTask()
 		noWindowActive = activeWindowModel.count === 0 || actTask.IsActive !== true
 		currentWindowMaximized = !noWindowActive && actTask.IsMaximized === true
-		isActiveWindowPinned = actTask.VirtualDesktop === -1;
+		isActiveWindowPinned = actTask.VirtualDesktop === -1
 	}
 }
