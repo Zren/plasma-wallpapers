@@ -72,6 +72,14 @@ QQC2.StackView {
     readonly property bool isSlideshow: wallpaper.configuration.Slideshow
     onIsSlideshowChanged: {
         updateContextMenu()
+
+        // Warkaround to stop the slideshow timer
+        if (isSlideshow) {
+            imageWallpaper.slideTimer = Qt.binding(function(){ return wallpaper.configuration.SlideInterval })
+        } else {
+            imageWallpaper.slideTimer = -1
+            Qt.callLater(root.configuredImageChanged) // Doesn't always work
+        }
     }
 
     property var imageWallpaper: Wallpaper.Image {
