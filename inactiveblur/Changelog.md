@@ -1,3 +1,7 @@
+## v3 - March 20 2019
+
+* Fix memory leak introduced in the port to the slideshow API. It is easily reproduced with the slideshow reaching 2Gb of RAM in under an hour (switching wallpapers every 10 seconds). I forgot a single line that destroyed the old image.
+
 ## v2 - March 19 2019
 
 * Trigger blur event when a new window is created or a window is destroyed. It was previously only updating when you minimized a window or moved it (Issue #2).
