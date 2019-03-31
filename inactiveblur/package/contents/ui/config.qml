@@ -72,9 +72,17 @@ ImageConfigPage {
             to: 2000000000
             stepSize: 100
             editable: true
+
             textFromValue: function(value, locale) {
-                // var x = Number(value).toLocaleString(locale, 'f', 0);
                 return i18n("%1ms", value)
+            }
+            valueFromText: function(text, locale) {
+                // Number.fromLocaleString() doesn't strip suffix and raises an error.
+                // return Number.fromLocaleString(locale, text)
+                
+                // parseInt does seem to stip non-digit characters, but it probably
+                // only works with ASCII digits?
+                return parseInt(text, 10)
             }
         }
 
