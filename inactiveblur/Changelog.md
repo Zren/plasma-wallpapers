@@ -1,3 +1,11 @@
+## v5 - October 2 2019
+
+* Update to the Plasma 5.16 Kirigami twinFormLayout config gui. Requires Plasma Frameworks v5.53, which is only available in Ubuntu 19.04 and later.
+
+## v4 - October 2 2019
+
+* Fix parsing 400ms in the config spinbox. It previous only worked when using up/down arrows ever since updating to the QtQuickControls 2.0 spinboxes.
+
 ## v3 - March 20 2019
 
 * Fix memory leak introduced in the port to the slideshow API. It is easily reproduced with the slideshow reaching 2Gb of RAM in under an hour (switching wallpapers every 10 seconds). I forgot a single line that destroyed the old image.
