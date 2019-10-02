@@ -41,12 +41,8 @@ ImageConfigPage {
     Row {
         id: inactiveBlurRow
         spacing: units.largeSpacing / 2
-        QtControls2.Label {
-            width: formAlignment - units.largeSpacing
-            anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
-            horizontalAlignment: Text.AlignRight
-            text: i18n("Blur:")
-        }
+        Kirigami.FormData.label: i18n("Blur:")
+
         QtControls2.Label {
             anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
             text: i18n(" by ")
