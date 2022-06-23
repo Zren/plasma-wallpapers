@@ -70,10 +70,10 @@ QQC2.StackView {
 		}
 	}
 
-	property var imageWallpaper: Wallpaper.Image {
+	property var imageWallpaper: Wallpaper.ImageBackend {
 		id: imageWallpaper
 		//the oneliner of difference between image and slideshow wallpapers
-		renderingMode: wallpaper.configuration.Slideshow ? Wallpaper.Image.SlideShow : Wallpaper.Image.SingleImage
+		renderingMode: wallpaper.configuration.Slideshow ? Wallpaper.ImageBackend.SlideShow : Wallpaper.ImageBackend.SingleImage
 		targetSize: Qt.size(root.width, root.height)
 		slidePaths: wallpaper.configuration.SlidePaths
 		slideTimer: wallpaper.configuration.SlideInterval

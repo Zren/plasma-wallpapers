@@ -42,7 +42,7 @@ ColumnLayout {
 		id: syspal
 	}
 
-	Wallpaper.Image {
+	Wallpaper.ImageBackend {
 		id: imageWallpaper
 		targetSize: {
 			if (typeof plasmoid !== "undefined") {
