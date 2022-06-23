@@ -1,8 +1,8 @@
 /*
-    SPDX-FileCopyrightText: 2013 Marco Martin <mart@kde.org>
-    SPDX-FileCopyrightText: 2014 Kai Uwe Broulik <kde@privat.broulik.de>
+	SPDX-FileCopyrightText: 2013 Marco Martin <mart@kde.org>
+	SPDX-FileCopyrightText: 2014 Kai Uwe Broulik <kde@privat.broulik.de>
 
-    SPDX-License-Identifier: GPL-2.0-or-later
+	SPDX-License-Identifier: GPL-2.0-or-later
 */
 
 import QtQuick 2.5
@@ -21,55 +21,55 @@ import org.kde.kcm 1.1 as KCM
 import org.kde.kirigami 2.5 as Kirigami
 
 ImageConfigPage {
-    id: root
+	id: root
 
-    property int cfg_AnimationDuration: 400
-    property int cfg_BlurRadius: 40
+	property int cfg_AnimationDuration: 400
+	property int cfg_BlurRadius: 40
 
-    Row {
-        id: inactiveBlurRow
-        spacing: units.largeSpacing / 2
-        Kirigami.FormData.label: i18n("Blur:")
+	Row {
+		id: inactiveBlurRow
+		spacing: units.largeSpacing / 2
+		Kirigami.FormData.label: i18n("Blur:")
 
-        QtControls2.Label {
-            anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
-            text: i18n(" by ")
-        }
-        QtControls2.SpinBox {
-            id: blurRadiusSpinBox
-            value: cfg_BlurRadius
-            onValueChanged: cfg_BlurRadius = value
-            stepSize: 1
-            from: 1
-            to: 2000000000
-            editable: true
-        }
-        QtControls2.Label {
-            anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
-            text: i18n(" over ")
-        }
-        QtControls2.SpinBox {
-            id: animationDurationSpinBox
-            value: cfg_AnimationDuration
-            onValueChanged: cfg_AnimationDuration = value
-            from: 0
-            to: 2000000000
-            stepSize: 100
-            editable: true
+		QtControls2.Label {
+			anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
+			text: i18n(" by ")
+		}
+		QtControls2.SpinBox {
+			id: blurRadiusSpinBox
+			value: cfg_BlurRadius
+			onValueChanged: cfg_BlurRadius = value
+			stepSize: 1
+			from: 1
+			to: 2000000000
+			editable: true
+		}
+		QtControls2.Label {
+			anchors.verticalCenter: blurRadiusSpinBox.verticalCenter
+			text: i18n(" over ")
+		}
+		QtControls2.SpinBox {
+			id: animationDurationSpinBox
+			value: cfg_AnimationDuration
+			onValueChanged: cfg_AnimationDuration = value
+			from: 0
+			to: 2000000000
+			stepSize: 100
+			editable: true
 
-            textFromValue: function(value, locale) {
-                return i18n("%1ms", value)
-            }
-            valueFromText: function(text, locale) {
-                // Number.fromLocaleString() doesn't strip suffix and raises an error.
-                // return Number.fromLocaleString(locale, text)
-                
-                // parseInt does seem to stip non-digit characters, but it probably
-                // only works with ASCII digits?
-                return parseInt(text, 10)
-            }
-        }
+			textFromValue: function(value, locale) {
+				return i18n("%1ms", value)
+			}
+			valueFromText: function(text, locale) {
+				// Number.fromLocaleString() doesn't strip suffix and raises an error.
+				// return Number.fromLocaleString(locale, text)
+				
+				// parseInt does seem to stip non-digit characters, but it probably
+				// only works with ASCII digits?
+				return parseInt(text, 10)
+			}
+		}
 
-    }
+	}
 
 }
