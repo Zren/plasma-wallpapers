@@ -70,6 +70,8 @@ QQC2.StackView {
 		}
 	}
 
+	// Plasma 5.24 and below use Wallpaper.Image
+	// Plasma 5.25 uses Wallpaper.ImageBackend, see: https://github.com/Zren/plasma-wallpapers/issues/14
 	property var imageWallpaper: Wallpaper.ImageBackend {
 		id: imageWallpaper
 		//the oneliner of difference between image and slideshow wallpapers
