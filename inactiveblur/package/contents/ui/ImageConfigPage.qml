@@ -39,10 +39,6 @@ ColumnLayout {
 		imageWallpaper.commitDeletion();
 	}
 
-	SystemPalette {
-		id: syspal
-	}
-
 	Wallpaper.ImageBackend {
 		id: imageWallpaper
 		targetSize: {
