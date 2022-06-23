@@ -48,7 +48,7 @@ KCM.GridDelegate {
 			onTriggered: {
 				imageModel.setPendingDeletion(index, true);
 				if (wallpapersGrid.currentIndex === index) {
-					wallpapersGrid.currentIndex = (index + 1) % wallpapersGrid.count;
+					wallpapersGrid.currentIndex = (index + 1) % wallpapersGrid.rowCount();
 				}
 			}
 		}
@@ -131,7 +131,9 @@ KCM.GridDelegate {
 	}
 
 	onClicked: {
-		cfg_Image = model.path;
-		wallpapersGrid.forceActiveFocus();
+		if (!cfg_Slideshow) {
+			cfg_Image = model.path;
+		}
+		view.currentIndex = index;
 	}
 }

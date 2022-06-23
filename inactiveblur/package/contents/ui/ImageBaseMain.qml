@@ -40,7 +40,9 @@ QQC2.StackView {
 	//private
 
 	onConfiguredImageChanged: {
-		imageWallpaper.addUrl(configuredImage)
+		if (modelImage != configuredImage && configuredImage != "") {
+			imageWallpaper.addUrl(configuredImage)
+		}
 	}
 
 	function updateContextMenu() {
@@ -79,11 +81,15 @@ QQC2.StackView {
 		targetSize: Qt.size(root.width, root.height)
 		slidePaths: wallpaper.configuration.SlidePaths
 		slideTimer: wallpaper.configuration.SlideInterval
+		slideshowMode: wallpaper.configuration.SlideshowMode
 		uncheckedSlides: wallpaper.configuration.UncheckedSlides
 	}
 
 	onFillModeChanged: Qt.callLater(loadImage)
-	onModelImageChanged: Qt.callLater(loadImage)
+	onModelImageChanged: {
+		Qt.callLater(loadImage)
+		wallpaper.configuration.Image = modelImage
+	}
 	onConfigColorChanged: Qt.callLater(loadImage)
 	onBlurChanged: Qt.callLater(loadImage)
 	onWidthChanged: Qt.callLater(loadImage)

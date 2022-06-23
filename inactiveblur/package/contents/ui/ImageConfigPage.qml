@@ -27,6 +27,7 @@ ColumnLayout {
 	property alias cfg_Color: colorButton.color
 	property string cfg_Image
 	property int cfg_FillMode
+	property int cfg_SlideshowMode
 	property alias cfg_Blur: blurRadioButton.checked
 	property var cfg_SlidePaths: ""
 	property int cfg_SlideInterval: 0
@@ -53,6 +54,7 @@ ColumnLayout {
 		}
 		onSlidePathsChanged: cfg_SlidePaths = slidePaths
 		onUncheckedSlidesChanged: cfg_UncheckedSlides = uncheckedSlides
+		onSlideshowModeChanged: cfg_SlideshowMode = slideshowMode
 	}
 
 	onCfg_SlidePathsChanged: {
@@ -60,6 +62,9 @@ ColumnLayout {
 	}
 	onCfg_UncheckedSlidesChanged: {
 		imageWallpaper.uncheckedSlides = cfg_UncheckedSlides
+	}
+	onCfg_SlideshowModeChanged: {
+		imageWallpaper.slideshowMode = cfg_SlideshowMode
 	}
 
 	property int hoursIntervalValue: Math.floor(cfg_SlideInterval / 3600)
@@ -165,6 +170,47 @@ ColumnLayout {
 			//FIXME: there should be only one spinbox: QtControls spinboxes are still too limited for it tough
 			Kirigami.FormLayout {
 				twinFormLayouts: parentLayout
+
+				QtControls2.ComboBox {
+					id: slideshowComboBox
+					visible: cfg_Slideshow
+					Kirigami.FormData.label: i18nd("plasma_wallpaper_org.kde.image", "Order:")
+					model: [
+						{
+							'label': i18nd("plasma_wallpaper_org.kde.image", "Random"),
+							'slideshowMode': Wallpaper.ImageBackend.Random
+						},
+						{
+							'label': i18nd("plasma_wallpaper_org.kde.image", "A to Z"),
+							'slideshowMode': Wallpaper.ImageBackend.Alphabetical
+						},
+						{
+							'label': i18nd("plasma_wallpaper_org.kde.image", "Z to A"),
+							'slideshowMode': Wallpaper.ImageBackend.AlphabeticalReversed
+						},
+						{
+							'label': i18nd("plasma_wallpaper_org.kde.image", "Date modified (newest first)"),
+							'slideshowMode': Wallpaper.ImageBackend.ModifiedReversed
+						},
+						{
+							'label': i18nd("plasma_wallpaper_org.kde.image", "Date modified (oldest first)"),
+							'slideshowMode': Wallpaper.ImageBackend.Modified
+						}
+					]
+					textRole: "label"
+					onCurrentIndexChanged: {
+						cfg_SlideshowMode = model[currentIndex]["slideshowMode"]
+					}
+					Component.onCompleted: setMethod();
+					function setMethod() {
+						for (var i = 0; i < model.length; i++) {
+							if (model[i]["slideshowMode"] === wallpaper.configuration.SlideshowMode) {
+								slideshowComboBox.currentIndex = i
+							}
+						}
+					}
+				}
+
 				RowLayout {
 					Kirigami.FormData.label: i18nd("plasma_wallpaper_org.kde.image","Change every:")
 					QtControls2.SpinBox {
@@ -275,12 +321,15 @@ ColumnLayout {
 		KCM.GridView {
 			id: wallpapersGrid
 			anchors.fill: parent
-			property var imageModel: cfg_Slideshow ? imageWallpaper.slideshowModel : imageWallpaper.wallpaperModel
+			property var imageModel: cfg_Slideshow ? imageWallpaper.slideFilterModel : imageWallpaper.wallpaperModel
 			//that min is needed as the module will be populated in an async way
 			//and only on demand so we can't ensure it already exists
-			view.currentIndex: Math.min(imageModel.indexOf(cfg_Image), imageModel.count-1)
+			view.currentIndex: Math.min(imageModel.indexOf(cfg_Image), imageModel.rowCount()-1)
 			//kill the space for label under thumbnails
 			view.model: imageModel
+			Component.onCompleted: {
+				imageModel.usedInConfig = true
+			}
 			view.delegate: WallpaperDelegate {
 				color: cfg_Color
 			}
