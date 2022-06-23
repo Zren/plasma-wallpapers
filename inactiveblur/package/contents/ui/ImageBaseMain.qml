@@ -79,6 +79,7 @@ QQC2.StackView {
 		targetSize: Qt.size(root.width, root.height)
 		slidePaths: wallpaper.configuration.SlidePaths
 		slideTimer: wallpaper.configuration.SlideInterval
+		uncheckedSlides: wallpaper.configuration.UncheckedSlides
 	}
 
 	onFillModeChanged: Qt.callLater(loadImage)
