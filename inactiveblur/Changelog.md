@@ -1,3 +1,9 @@
+## v6 - October 15 2022
+
+* Plasma 5.25 bugfix as a class called Image was renamed to ImageBackend.
+* Implement upstream Slideshow exclude image, slideshow mode.
+* Code cleanup.
+
 ## v5 - October 2 2019
 
 * Update to the Plasma 5.16 Kirigami twinFormLayout config gui. Requires Plasma Frameworks v5.53, which is only available in Ubuntu 19.04 and later.
