@@ -1,4 +1,37 @@
 #!/bin/bash
-# Version 2
+# Version 4
 
-kpackagetool5 -t Plasma/Wallpaper -i package
+# This script detects if the widget is already installed.
+# If it is, it will use --upgrade instead and restart plasmashell.
+
+packageNamespace=`kreadconfig5 --file="$PWD/package/metadata.desktop" --group="Desktop Entry" --key="X-KDE-PluginInfo-Name"`
+packageServiceType=`kreadconfig5 --file="$PWD/package/metadata.desktop" --group="Desktop Entry" --key="X-KDE-ServiceTypes"`
+restartPlasmashell=false
+
+for arg in "$@"; do
+	case "$arg" in
+		-r) restartPlasmashell=true;;
+		--restart) restartPlasmashell=true;;
+		*) ;;
+	esac
+done
+
+isAlreadyInstalled=false
+kpackagetool5 --type="${packageServiceType}" --show="$packageNamespace" &> /dev/null
+if [ $? == 0 ]; then
+	isAlreadyInstalled=true
+fi
+
+if $isAlreadyInstalled; then
+	# Eg: kpackagetool5 -t "Plasma/Applet" -u package
+	kpackagetool5 -t "${packageServiceType}" -u package
+	restartPlasmashell=true
+else
+	# Eg: kpackagetool5 -t "Plasma/Applet" -i package
+	kpackagetool5 -t "${packageServiceType}" -i package
+fi
+
+if $restartPlasmashell; then
+	killall plasmashell
+	kstart5 plasmashell
+fi
